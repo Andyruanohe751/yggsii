@@ -50,6 +50,12 @@ type StoryProject = {
   updatedAt: string
 }
 
+type ProjectBackup = {
+  schemaVersion: 1
+  exportedAt: string
+  project: StoryProject
+}
+
 type AppState = {
   projects: StoryProject[]
   activeProjectId: Id
@@ -61,6 +67,7 @@ type AppState = {
 }
 
 const STORAGE_KEY = 'yggsii-mvp-v1'
+const BACKUP_SCHEMA_VERSION = 1
 
 const colors = ['#8b5cf6', '#0ea5e9', '#22c55e', '#f97316', '#ec4899', '#eab308']
 
@@ -231,28 +238,96 @@ function ensureSelections(project: StoryProject) {
 function createProject() {
   const title = prompt('Project title?', 'Untitled Story')?.trim()
   if (!title) return
+  importProjectRecord({
+    id: makeId(),
+    title,
+    premise: '',
+    genre: 'Fiction',
+    viewpoint: '',
+    chapters: [{ id: makeId(), title: 'Chapter 1', summary: '', order: 1 }],
+    scenes: [],
+    characters: [],
+    locations: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }, true)
+}
+
+function download(filename: string, contents: string, type = 'application/json') {
+  const blob = new Blob([contents], { type })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function filenameSafe(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'story-project'
+}
+
+function normalizeProject(project: StoryProject): StoryProject {
+  const chapters = project.chapters?.length ? project.chapters : [{ id: makeId(), title: 'Chapter 1', summary: '', order: 1 }]
+  const scenes = project.scenes?.length
+    ? project.scenes.map((scene, index) => ({ ...scene, order: Number(scene.order) || index + 1, characterIds: Array.isArray(scene.characterIds) ? scene.characterIds : [] }))
+    : [{ id: makeId(), chapterId: chapters[0].id, title: 'Opening scene', summary: '', content: '', order: 1, timeLabel: 'Day 1', characterIds: [], status: 'draft' as const }]
+
+  return {
+    ...project,
+    chapters: chapters.map((chapter, index) => ({ ...chapter, order: Number(chapter.order) || index + 1 })),
+    scenes,
+    characters: (project.characters ?? []).map((character, index) => ({ ...character, color: character.color || colors[index % colors.length] })),
+    locations: project.locations ?? [],
+    createdAt: project.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+function isStoryProject(value: unknown): value is StoryProject {
+  if (!value || typeof value !== 'object') return false
+  const project = value as Partial<StoryProject>
+  return typeof project.id === 'string' && typeof project.title === 'string' && Array.isArray(project.chapters) && Array.isArray(project.scenes) && Array.isArray(project.characters) && Array.isArray(project.locations)
+}
+
+function importProjectRecord(project: StoryProject, replaceActive = false) {
+  const normalized = normalizeProject(project)
   update((draft) => {
-    const chapterId = makeId()
-    const sceneId = makeId()
-    const project: StoryProject = {
-      id: makeId(),
-      title,
-      premise: '',
-      genre: 'Fiction',
-      viewpoint: '',
-      chapters: [{ id: chapterId, title: 'Chapter 1', summary: '', order: 1 }],
-      scenes: [{ id: sceneId, chapterId, title: 'Opening scene', summary: '', content: '', order: 1, timeLabel: 'Day 1', characterIds: [], status: 'draft' }],
-      characters: [],
-      locations: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    if (replaceActive) {
+      draft.projects = [normalized, ...draft.projects.filter((item) => item.id !== draft.activeProjectId && item.id !== normalized.id)]
+    } else {
+      draft.projects = [normalized, ...draft.projects.filter((item) => item.id !== normalized.id)]
     }
-    draft.projects.unshift(project)
-    draft.activeProjectId = project.id
-    draft.activeChapterId = chapterId
-    draft.activeSceneId = sceneId
-    draft.activeCharacterId = undefined
+    draft.activeProjectId = normalized.id
+    draft.activeChapterId = sortedChapters(normalized)[0]?.id
+    draft.activeSceneId = sortedScenes(normalized)[0]?.id
+    draft.activeCharacterId = normalized.characters[0]?.id
   })
+}
+
+function exportProject(project: StoryProject) {
+  const backup: ProjectBackup = {
+    schemaVersion: BACKUP_SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    project,
+  }
+  download(`${filenameSafe(project.title)}.yggsii.json`, JSON.stringify(backup, null, 2))
+}
+
+async function importProjectFile(file?: File | null) {
+  if (!file) return
+  try {
+    const raw = await file.text()
+    const parsed = JSON.parse(raw) as ProjectBackup | StoryProject
+    const project = 'project' in parsed ? parsed.project : parsed
+    if (!isStoryProject(project)) {
+      alert('That file does not look like a valid Yggsii project backup.')
+      return
+    }
+    importProjectRecord(project)
+  } catch {
+    alert('Import failed. Check that the file is valid JSON exported from Yggsii.')
+  }
 }
 
 function deleteScene(sceneId: Id) {
@@ -327,10 +402,13 @@ function render() {
             <h2>${escapeHtml(project.title)}</h2>
           </div>
           <div class="toolbar">
+            <button data-action="project-export">Export JSON</button>
+            <button data-action="project-import">Import JSON</button>
             <button data-action="theme-toggle">${state.theme === 'dark' ? 'Light mode' : 'Dark mode'}</button>
             <button data-action="seed-reset">Restore demo</button>
           </div>
         </header>
+        <input id="project-import-file" type="file" accept="application/json,.json,.yggsii.json" hidden />
         ${state.view === 'workspace' ? renderWorkspace(project, chapters, scenes, activeScene, activeCharacter) : ''}
         ${state.view === 'timeline' ? renderTimeline(project, scenes) : ''}
         ${state.view === 'meetings' ? renderMeetings(project, scenes) : ''}
@@ -542,6 +620,8 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
 
   on('[data-view]', (element) => update((draft) => { draft.view = element.dataset.view as AppState['view'] }))
   on('[data-action="create-project"]', () => createProject())
+  on('[data-action="project-export"]', () => exportProject(project))
+  on('[data-action="project-import"]', () => document.getElementById('project-import-file')?.click())
   on('[data-action="theme-toggle"]', () => update((draft) => { draft.theme = draft.theme === 'dark' ? 'light' : 'dark' }))
   on('[data-action="seed-reset"]', () => { if (confirm('Replace local data with the demo project?')) { state = defaultState(); saveState(); render() } })
   on('[data-chapter-id]', (element) => update((draft) => { draft.activeChapterId = element.dataset.chapterId! }))
@@ -578,6 +658,14 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   on('[data-action="delete-scene"]', (element) => {
     if (confirm('Delete this scene?')) deleteScene(element.dataset.sceneId!)
   })
+
+  const importInput = document.getElementById('project-import-file') as HTMLInputElement | null
+  if (importInput) {
+    importInput.onchange = async () => {
+      await importProjectFile(importInput.files?.[0])
+      importInput.value = ''
+    }
+  }
 
   bindInput('story-title', (value) => update(() => { project.title = value; stamp(project) }))
   bindInput('story-premise', (value) => update(() => { project.premise = value; stamp(project) }))

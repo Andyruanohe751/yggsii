@@ -28,6 +28,8 @@ Why:
 - character meetings view showing who shares scenes and how often
 - dark mode and light mode toggle
 - local persistence with `localStorage`
+- project export as versioned JSON backup
+- project import from exported JSON with basic validation
 - seeded demo project so the app feels useful on first launch
 - restore-demo button for resetting the dataset quickly
 
@@ -60,7 +62,7 @@ npm run build
 ## Known limitations
 
 - no backend or cross-device sync
-- no import/export yet
+- import validation is intentionally basic and expects Yggsii-shaped JSON
 - character and location deletion are not implemented yet
 - timeline ordering is manual rather than calendar-aware
 - there is no rich text editor, just structured plain text fields
