@@ -141,6 +141,6 @@ A first workspace-wide search layer is now in place across scenes, characters, a
 
 Workspace search results are now grouped by entity type, and locations now have a lightweight inspector inside the workspace with linked-scene visibility.
 
-A first ranking pass is now in place too, and manuscript, location, and character inspection now link directly back into scene editing. Scenes can now jump out to manuscript view as well.
+A first ranking pass is now in place too, and manuscript, location, and character inspection now link directly back into scene editing. Scenes can now jump out to manuscript and timeline views as well.
 
-The next ergonomic gain is probably richer relevance rules than simple text scoring, plus more outward links from scenes into timeline and meetings context.
+The next ergonomic gain is probably richer relevance rules than simple text scoring, plus more outward links from scenes into meetings context.
