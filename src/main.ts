@@ -69,6 +69,7 @@ type AppState = {
   activeChapterId?: Id
   activeSceneId?: Id
   activeCharacterId?: Id
+  activeLocationId?: Id
   theme: 'dark' | 'light'
   view: 'workspace' | 'timeline' | 'meetings' | 'manuscript'
   timelineFilters: TimelineFilters
@@ -181,6 +182,7 @@ const defaultState = (): AppState => {
     activeChapterId: project.chapters[0]?.id,
     activeSceneId: project.scenes[0]?.id,
     activeCharacterId: project.characters[0]?.id,
+    activeLocationId: project.locations[0]?.id,
     theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     view: 'workspace',
     timelineFilters: emptyTimelineFilters(),
@@ -258,6 +260,9 @@ function ensureSelections(project: StoryProject) {
   if (!project.characters.find((character) => character.id === state.activeCharacterId)) {
     state.activeCharacterId = project.characters[0]?.id
   }
+  if (!project.locations.find((location) => location.id === state.activeLocationId)) {
+    state.activeLocationId = project.locations[0]?.id
+  }
 }
 
 function createProject() {
@@ -327,6 +332,7 @@ function importProjectRecord(project: StoryProject, replaceActive = false) {
     draft.activeChapterId = sortedChapters(normalized)[0]?.id
     draft.activeSceneId = sortedScenes(normalized)[0]?.id
     draft.activeCharacterId = normalized.characters[0]?.id
+    draft.activeLocationId = normalized.locations[0]?.id
   })
 }
 
@@ -525,6 +531,7 @@ function workspaceSearchResults(project: StoryProject, query: string): Workspace
 }
 
 function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Scene[], activeScene?: Scene, activeCharacter?: Character) {
+  const activeLocation = project.locations.find((location) => location.id === state.activeLocationId) ?? project.locations[0]
   const results = workspaceSearchResults(project, state.workspaceQuery)
   return `
     <section class="workspace-grid">
@@ -595,10 +602,11 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
           ${project.locations
             .map((location) => {
               const references = locationReferences(project, location.id)
-              return `<div class="location-item"><div><strong>${escapeHtml(location.name)}</strong><span>${escapeHtml(location.details)}</span><span>${references.length} linked scene${references.length === 1 ? '' : 's'}</span></div><button class="danger inline-action" data-action="delete-location" data-location-id="${location.id}">Delete</button></div>`
+              return `<button class="location-item ${location.id === activeLocation?.id ? 'active' : ''}" data-location-id="${location.id}"><div><strong>${escapeHtml(location.name)}</strong><span>${escapeHtml(location.details)}</span><span>${references.length} linked scene${references.length === 1 ? '' : 's'}</span></div></button>`
             })
             .join('')}
         </div>
+        ${activeLocation ? renderLocationEditor(project, activeLocation) : '<p class="muted">No location selected yet.</p>'}
       </div>
     </section>
   `
@@ -654,6 +662,22 @@ function renderCharacterEditor(project: StoryProject, character: Character) {
     <p class="muted">Appears in ${appearances.length} scene${appearances.length === 1 ? '' : 's'}.</p>
     <div class="mini-list">
       ${appearances.length ? appearances.map((scene) => `<div><strong>${scene.order}. ${escapeHtml(scene.title)}</strong><span>${escapeHtml(scene.timeLabel)}</span></div>`).join('') : '<p class="muted">No scene appearances yet.</p>'}
+    </div>
+  `
+}
+
+function renderLocationEditor(project: StoryProject, location: Location) {
+  const references = locationReferences(project, location.id)
+  return `
+    <div class="section-head inline-head">
+      <h3>Location inspector</h3>
+      <button class="danger" data-action="delete-location" data-location-id="${location.id}">Delete</button>
+    </div>
+    <label>Name<input id="location-name" value="${escapeAttr(location.name)}" /></label>
+    <label>Details<textarea id="location-details">${escapeHtml(location.details)}</textarea></label>
+    <p class="muted">Referenced by ${references.length} scene${references.length === 1 ? '' : 's'}.</p>
+    <div class="mini-list">
+      ${references.length ? references.map((scene) => `<div><strong>${scene.order}. ${escapeHtml(scene.title)}</strong><span>${escapeHtml(scene.timeLabel || 'Unscheduled')}</span></div>`).join('') : '<p class="muted">No linked scenes yet.</p>'}
     </div>
   `
 }
@@ -862,6 +886,7 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
       draft.activeChapterId = sortedChapters(nextProject)[0]?.id
       draft.activeSceneId = sortedScenes(nextProject)[0]?.id
       draft.activeCharacterId = nextProject.characters[0]?.id
+      draft.activeLocationId = nextProject.locations[0]?.id
     })
   })
 
@@ -895,13 +920,14 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
       draft.activeCharacterId = resultId
     }
     if (resultType === 'location') {
-      draft.view = 'timeline'
-      draft.timelineFilters.locationId = resultId
+      draft.view = 'workspace'
+      draft.activeLocationId = resultId
     }
   }))
   on('[data-chapter-id]', (element) => update((draft) => { draft.activeChapterId = element.dataset.chapterId! }))
   on('[data-scene-id]', (element) => update((draft) => { draft.activeSceneId = element.dataset.sceneId! }))
   on('[data-character-id]', (element) => update((draft) => { draft.activeCharacterId = element.dataset.characterId! }))
+  on('[data-location-id]', (element) => update((draft) => { draft.activeLocationId = element.dataset.locationId! }))
   on('[data-action="add-chapter"]', () => update(() => {
     const current = getProject()
     const chapter = { id: makeId(), title: `Chapter ${current.chapters.length + 1}`, summary: '', order: current.chapters.length + 1 }
@@ -927,7 +953,9 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   }))
   on('[data-action="add-location"]', () => update(() => {
     const current = getProject()
-    current.locations.push({ id: makeId(), name: `Location ${current.locations.length + 1}`, details: '' })
+    const location = { id: makeId(), name: `Location ${current.locations.length + 1}`, details: '' }
+    current.locations.push(location)
+    state.activeLocationId = location.id
     stamp(current)
   }))
   on('[data-action="delete-scene"]', (element) => {
@@ -990,6 +1018,12 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     bindInput('character-name', (value) => update(() => { activeCharacter.name = value; stamp(project) }))
     bindInput('character-role', (value) => update(() => { activeCharacter.role = value; stamp(project) }))
     bindInput('character-notes', (value) => update(() => { activeCharacter.notes = value; stamp(project) }))
+  }
+
+  const activeLocation = project.locations.find((location) => location.id === state.activeLocationId)
+  if (activeLocation) {
+    bindInput('location-name', (value) => update(() => { activeLocation.name = value; stamp(project) }))
+    bindInput('location-details', (value) => update(() => { activeLocation.details = value; stamp(project) }))
   }
 }
 

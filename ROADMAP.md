@@ -139,6 +139,6 @@ Active filter chips are now in place too.
 
 A first workspace-wide search layer is now in place across scenes, characters, and locations.
 
-Location results now hand off directly into timeline filtering, and workspace search results are now grouped by entity type.
+Workspace search results are now grouped by entity type, and locations now have a lightweight inspector inside the workspace with linked-scene visibility.
 
-The next ergonomic gain is probably richer location inspection inside the workspace itself, plus ranking or sorting rules for denser result sets.
+The next ergonomic gain is probably ranking or sorting rules for denser result sets, plus stronger cross-linking between locations and scene editing.
