@@ -653,7 +653,7 @@ function renderSceneEditor(project: StoryProject, scene: Scene) {
     .join('')
 
   return `
-    <div class="section-head"><h3>Scene editor</h3><div class="toolbar compact"><button data-action="open-scene-in-manuscript" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open in manuscript</button><button data-action="open-scene-in-timeline" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open in timeline</button><button class="danger" data-action="delete-scene" data-scene-id="${scene.id}">Delete</button></div></div>
+    <div class="section-head"><h3>Scene editor</h3><div class="toolbar compact"><button data-action="open-scene-in-manuscript" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open in manuscript</button><button data-action="open-scene-in-timeline" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open in timeline</button><button data-action="open-scene-in-meetings" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open in meetings</button><button class="danger" data-action="delete-scene" data-scene-id="${scene.id}">Delete</button></div></div>
     <div class="split-2">
       <label>Scene title<input id="scene-title" value="${escapeAttr(scene.title)}" /></label>
       <label>Timeline label<input id="scene-time" value="${escapeAttr(scene.timeLabel)}" /></label>
@@ -987,6 +987,11 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   }))
   on('[data-action="open-scene-in-timeline"]', (element) => update((draft) => {
     draft.view = 'timeline'
+    draft.activeSceneId = element.dataset.sceneId!
+    draft.activeChapterId = element.dataset.chapterId || draft.activeChapterId
+  }))
+  on('[data-action="open-scene-in-meetings"]', (element) => update((draft) => {
+    draft.view = 'meetings'
     draft.activeSceneId = element.dataset.sceneId!
     draft.activeChapterId = element.dataset.chapterId || draft.activeChapterId
   }))
