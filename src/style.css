@@ -241,6 +241,23 @@ h1, h2, h3, p { margin-top: 0; }
 }
 .meeting-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .meeting-card { grid-template-columns: 1fr; }
+.ensemble-summary {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.ensemble-summary-head {
+  align-items: flex-start;
+}
+.ensemble-scene-meta {
+  margin-bottom: 0;
+}
+.ensemble-stats {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.ensemble-pair {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
 .manuscript-panel {
   padding: 1.25rem;
 }

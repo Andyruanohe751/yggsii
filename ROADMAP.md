@@ -148,3 +148,7 @@ Active-scene arrival highlighting is now in place for timeline and manuscript, a
 The next ergonomic gain is probably richer relevance rules than simple text scoring, plus deeper meetings logic for larger ensemble scenes.
 
 A concrete design note for that next meetings slice now lives at `docs/ensemble-meetings-design.md`, centred on an active-scene ensemble summary panel so larger casts read as social structure rather than just a pile of pair cards.
+
+That ensemble summary panel is now in place in meetings view, along with clearer highlighting for active-ensemble pair cards.
+
+The next likely gain is either better relevance rules for workspace search, or more structural ranking inside meetings so active-scene pairs and historically important pairs separate more cleanly.
