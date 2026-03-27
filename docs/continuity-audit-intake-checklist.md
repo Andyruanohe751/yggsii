@@ -106,6 +106,10 @@ The service now has:
 - a one-page offer sheet
 - a mock-client pressure test
 
+## Current reusable workflow tool
+
+- `reveal-ledger-template.md` for knowledge-state continuity, secrets, and reveal-order tracking
+
 ## Next packaging move
 
-Turn the campaign sample into a lighter reusable template or checklist artifact, especially around reveal ledgers and knowledge-state tracking.
+Extract a second reusable tool from the campaign sample, likely a travel spine or absence-tracking template.

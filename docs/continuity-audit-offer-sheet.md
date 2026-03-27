@@ -118,6 +118,7 @@ That means every audit can improve:
 - sample output, linear story: `sample-continuity-audit.md`
 - sample output, campaign adaptation: `sample-continuity-audit-campaign.md`
 - intake path: `continuity-audit-intake-checklist.md`
+- reusable workflow tool: `reveal-ledger-template.md`
 
 ## Next validation move
 
