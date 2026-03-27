@@ -71,3 +71,7 @@ A user opening meetings view from a five-character scene should be able to under
 - cluster pair cards by active scene versus historical overlap
 - add relationship labels once explicit relationship records exist
 - surface "solo bridge" characters who connect otherwise separate subgroups
+
+## Implementation handoff
+
+A concrete build checklist for the first coding pass now lives in `docs/ensemble-meetings-implementation-checklist.md`.
