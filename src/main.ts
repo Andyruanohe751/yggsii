@@ -493,6 +493,21 @@ type WorkspaceSearchResult = {
   chapterId?: string
   title: string
   meta: string
+  score: number
+}
+
+function scoreMatch(...fields: string[]) {
+  return (needle: string) => {
+    const lowerFields = fields.map((field) => field.toLowerCase())
+    let score = 0
+    for (const field of lowerFields) {
+      if (!field) continue
+      if (field === needle) score += 10
+      else if (field.startsWith(needle)) score += 6
+      else if (field.includes(needle)) score += 3
+    }
+    return score
+  }
 }
 
 function workspaceSearchResults(project: StoryProject, query: string): WorkspaceSearchResult[] {
@@ -500,34 +515,51 @@ function workspaceSearchResults(project: StoryProject, query: string): Workspace
   if (!needle) return []
 
   const sceneResults = sortedScenes(project)
-    .filter((scene) => [scene.title, scene.summary, scene.content, scene.timeLabel].join(' ').toLowerCase().includes(needle))
     .map((scene) => ({
+      scene,
+      score: scoreMatch(scene.title, scene.summary, scene.content, scene.timeLabel)(needle),
+    }))
+    .filter(({ score }) => score > 0)
+    .map(({ scene, score }) => ({
       type: 'scene' as const,
       id: scene.id,
       chapterId: scene.chapterId,
       title: scene.title || 'Untitled scene',
       meta: `${scene.timeLabel || 'Unscheduled'} · ${sceneChapter(project, scene)?.title || 'No chapter'}`,
+      score,
     }))
 
   const characterResults = project.characters
-    .filter((character) => [character.name, character.role, character.notes].join(' ').toLowerCase().includes(needle))
     .map((character) => ({
+      character,
+      score: scoreMatch(character.name, character.role, character.notes)(needle),
+    }))
+    .filter(({ score }) => score > 0)
+    .map(({ character, score }) => ({
       type: 'character' as const,
       id: character.id,
       title: character.name,
       meta: character.role || 'Character',
+      score,
     }))
 
   const locationResults = project.locations
-    .filter((location) => [location.name, location.details].join(' ').toLowerCase().includes(needle))
     .map((location) => ({
+      location,
+      score: scoreMatch(location.name, location.details)(needle),
+    }))
+    .filter(({ score }) => score > 0)
+    .map(({ location, score }) => ({
       type: 'location' as const,
       id: location.id,
       title: location.name,
       meta: location.details || 'Location',
+      score,
     }))
 
-  return [...sceneResults, ...characterResults, ...locationResults].slice(0, 12)
+  return [...sceneResults, ...characterResults, ...locationResults]
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+    .slice(0, 12)
 }
 
 function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Scene[], activeScene?: Scene, activeCharacter?: Character) {
@@ -546,7 +578,7 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
                     const rows = results.filter((result) => result.type === type)
                     if (!rows.length) return ''
                     return `<div class="search-group"><p class="eyebrow">${type === 'scene' ? 'Scenes' : type === 'character' ? 'Characters' : 'Locations'}</p><div class="mini-list search-results">${rows
-                      .map((result) => `<button class="search-result" data-action="open-search-result" data-result-type="${result.type}" data-result-id="${result.id}" data-chapter-id="${result.chapterId || ''}"><strong>${escapeHtml(result.title)}</strong><span>${escapeHtml(result.type)} · ${escapeHtml(result.meta)}</span><span class="search-result-hint">${result.type === 'location' ? 'Open in timeline filter' : 'Open in workspace'}</span></button>`)
+                      .map((result) => `<button class="search-result" data-action="open-search-result" data-result-type="${result.type}" data-result-id="${result.id}" data-chapter-id="${result.chapterId || ''}"><strong>${escapeHtml(result.title)}</strong><span>${escapeHtml(result.type)} · ${escapeHtml(result.meta)}</span><span class="search-result-hint">${result.type === 'location' ? 'Open in workspace location inspector' : 'Open in workspace'} · rank ${result.score}</span></button>`)
                       .join('')}</div></div>`
                   })
                   .join('')}`
