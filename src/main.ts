@@ -344,6 +344,41 @@ function deleteScene(sceneId: Id) {
   })
 }
 
+function characterAppearances(project: StoryProject, characterId: Id) {
+  return sortedScenes(project).filter((scene) => scene.characterIds.includes(characterId))
+}
+
+function locationReferences(project: StoryProject, locationId: Id) {
+  return sortedScenes(project).filter((scene) => scene.locationId === locationId)
+}
+
+function describeReferencedScenes(scenes: Scene[]) {
+  if (!scenes.length) return 'No scenes reference it yet.'
+  const preview = scenes.slice(0, 3).map((scene) => `${scene.order}. ${scene.title || 'Untitled scene'}`).join('\n')
+  const extra = scenes.length > 3 ? `\n…and ${scenes.length - 3} more.` : ''
+  return `${scenes.length} scene${scenes.length === 1 ? '' : 's'} reference it:\n${preview}${extra}`
+}
+
+function deleteCharacter(characterId: Id) {
+  update(() => {
+    const project = getProject()
+    project.characters = project.characters.filter((character) => character.id !== characterId)
+    project.scenes = project.scenes.map((scene) => ({ ...scene, characterIds: scene.characterIds.filter((id) => id !== characterId) }))
+    stamp(project)
+    ensureSelections(project)
+  })
+}
+
+function deleteLocation(locationId: Id) {
+  update(() => {
+    const project = getProject()
+    project.locations = project.locations.filter((location) => location.id !== locationId)
+    project.scenes = project.scenes.map((scene) => scene.locationId === locationId ? { ...scene, locationId: undefined } : scene)
+    stamp(project)
+    ensureSelections(project)
+  })
+}
+
 function render() {
   const project = getProject()
   ensureSelections(project)
@@ -471,9 +506,10 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
         <div class="section-head locations-head"><h3>Locations</h3><button data-action="add-location">Add location</button></div>
         <div class="location-list">
           ${project.locations
-            .map(
-              (location) => `<div class="location-item"><strong>${escapeHtml(location.name)}</strong><span>${escapeHtml(location.details)}</span></div>`,
-            )
+            .map((location) => {
+              const references = locationReferences(project, location.id)
+              return `<div class="location-item"><div><strong>${escapeHtml(location.name)}</strong><span>${escapeHtml(location.details)}</span><span>${references.length} linked scene${references.length === 1 ? '' : 's'}</span></div><button class="danger inline-action" data-action="delete-location" data-location-id="${location.id}">Delete</button></div>`
+            })
             .join('')}
         </div>
       </div>
@@ -519,14 +555,18 @@ function renderSceneEditor(project: StoryProject, scene: Scene) {
 }
 
 function renderCharacterEditor(project: StoryProject, character: Character) {
-  const appearances = sortedScenes(project).filter((scene) => scene.characterIds.includes(character.id))
+  const appearances = characterAppearances(project, character.id)
   return `
+    <div class="section-head inline-head">
+      <h3>Character editor</h3>
+      <button class="danger" data-action="delete-character" data-character-id="${character.id}">Delete</button>
+    </div>
     <label>Name<input id="character-name" value="${escapeAttr(character.name)}" /></label>
     <label>Role<input id="character-role" value="${escapeAttr(character.role)}" /></label>
     <label>Notes<textarea id="character-notes">${escapeHtml(character.notes)}</textarea></label>
     <p class="muted">Appears in ${appearances.length} scene${appearances.length === 1 ? '' : 's'}.</p>
     <div class="mini-list">
-      ${appearances.map((scene) => `<div><strong>${scene.order}. ${escapeHtml(scene.title)}</strong><span>${escapeHtml(scene.timeLabel)}</span></div>`).join('')}
+      ${appearances.length ? appearances.map((scene) => `<div><strong>${scene.order}. ${escapeHtml(scene.title)}</strong><span>${escapeHtml(scene.timeLabel)}</span></div>`).join('') : '<p class="muted">No scene appearances yet.</p>'}
     </div>
   `
 }
@@ -657,6 +697,22 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   }))
   on('[data-action="delete-scene"]', (element) => {
     if (confirm('Delete this scene?')) deleteScene(element.dataset.sceneId!)
+  })
+  on('[data-action="delete-character"]', (element) => {
+    const characterId = element.dataset.characterId!
+    const character = project.characters.find((item) => item.id === characterId)
+    if (!character) return
+    const appearances = characterAppearances(project, characterId)
+    const warning = `Delete ${character.name}?\n\nThis will remove the character from the project and from any linked scenes.\n\n${describeReferencedScenes(appearances)}`
+    if (confirm(warning)) deleteCharacter(characterId)
+  })
+  on('[data-action="delete-location"]', (element) => {
+    const locationId = element.dataset.locationId!
+    const location = project.locations.find((item) => item.id === locationId)
+    if (!location) return
+    const references = locationReferences(project, locationId)
+    const warning = `Delete ${location.name}?\n\nThis will remove the location from the project and clear it from any linked scenes.\n\n${describeReferencedScenes(references)}`
+    if (confirm(warning)) deleteLocation(locationId)
   })
 
   const importInput = document.getElementById('project-import-file') as HTMLInputElement | null

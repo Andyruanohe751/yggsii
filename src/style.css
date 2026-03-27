@@ -139,6 +139,18 @@ h1, h2, h3, p { margin-top: 0; }
   border: 1px solid var(--border);
   border-radius: 14px;
 }
+.location-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.inline-head {
+  margin-bottom: 1rem;
+}
+.inline-action {
+  padding: 0.45rem 0.75rem;
+}
 .check-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
 .check-row input { width: auto; margin: 0; }
 .timeline-card, .meeting-card {
