@@ -812,7 +812,9 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
 }
 
 function renderMeetings(project: StoryProject, scenes: Scene[]) {
-  const pairs = new Map<string, { names: string; count: number; moments: string[] }>()
+  const activeScene = scenes.find((scene) => scene.id === state.activeSceneId)
+  const activeNames = activeScene ? activeScene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean).sort() : []
+  const pairs = new Map<string, { names: string; count: number; moments: string[]; active: boolean }>()
   for (const scene of scenes) {
     for (let i = 0; i < scene.characterIds.length; i += 1) {
       for (let j = i + 1; j < scene.characterIds.length; j += 1) {
@@ -823,11 +825,13 @@ function renderMeetings(project: StoryProject, scenes: Scene[]) {
         const existing = pairs.get(ids)
         const label = `${a.name} and ${b.name}`
         const moment = `${scene.timeLabel || 'Unscheduled'} in ${sceneLocation(project, scene)?.name || 'unknown location'}`
+        const isActivePair = activeNames.length === 2 && activeNames[0] === a.name && activeNames[1] === b.name
         if (existing) {
           existing.count += 1
           existing.moments.push(moment)
+          existing.active = existing.active || isActivePair
         } else {
-          pairs.set(ids, { names: label, count: 1, moments: [moment] })
+          pairs.set(ids, { names: label, count: 1, moments: [moment], active: isActivePair })
         }
       }
     }
@@ -841,7 +845,7 @@ function renderMeetings(project: StoryProject, scenes: Scene[]) {
         ${rows.length
           ? rows
               .map(
-                (row) => `<article class="meeting-card"><h3>${escapeHtml(row.names)}</h3><strong>${row.count} shared scene${row.count === 1 ? '' : 's'}</strong><p>${escapeHtml(row.moments.join(' • '))}</p></article>`,
+                (row) => `<article class="meeting-card ${row.active ? 'active-arrival' : ''}"><h3>${escapeHtml(row.names)}</h3><strong>${row.count} shared scene${row.count === 1 ? '' : 's'}</strong><p>${escapeHtml(row.moments.join(' • '))}</p><p class="muted timeline-hint">${row.active ? 'Current scene pair' : ''}</p></article>`,
               )
               .join('')
           : '<p class="muted">No overlapping characters yet. Add multiple characters to a scene and this view will come alive.</p>'}
