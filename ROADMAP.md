@@ -146,3 +146,5 @@ A first ranking pass is now in place too, and manuscript, location, and characte
 Active-scene arrival highlighting is now in place for timeline and manuscript, and meetings now highlight the active character pair when the current scene contains exactly two characters while showing cast-context notes for larger scenes. Larger-scene arrival notes now also link back to the current scene editor, name the active scene explicitly, include its time label and location when present, and highlight relevant cast pairs too.
 
 The next ergonomic gain is probably richer relevance rules than simple text scoring, plus deeper meetings logic for larger ensemble scenes.
+
+A concrete design note for that next meetings slice now lives at `docs/ensemble-meetings-design.md`, centred on an active-scene ensemble summary panel so larger casts read as social structure rather than just a pile of pair cards.
