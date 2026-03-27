@@ -201,6 +201,10 @@ h1, h2, h3, p { margin-top: 0; }
   border-color: var(--accent);
   box-shadow: var(--shadow);
 }
+.active-arrival {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), var(--shadow);
+}
 .timeline-hint {
   margin-top: 0.75rem;
 }

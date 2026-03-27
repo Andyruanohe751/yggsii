@@ -143,4 +143,4 @@ Workspace search results are now grouped by entity type, and locations now have 
 
 A first ranking pass is now in place too, and manuscript, location, and character inspection now link directly back into scene editing. Scenes can now jump out to manuscript, timeline, and meetings views as well.
 
-The next ergonomic gain is probably richer relevance rules than simple text scoring, plus sharper context-aware highlighting once you arrive in those alternate views.
+Active-scene arrival highlighting is now in place for timeline and manuscript. The next ergonomic gain is probably richer relevance rules than simple text scoring, plus better arrival context in meetings view.

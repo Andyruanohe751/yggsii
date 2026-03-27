@@ -755,6 +755,7 @@ function activeTimelineFilterChips(project: StoryProject, filters: TimelineFilte
 function renderTimeline(project: StoryProject, scenes: Scene[]) {
   const filters = state.timelineFilters
   const filteredScenes = scenes.filter((scene) => sceneMatchesTimelineFilters(project, scene, filters))
+  const activeSceneId = state.activeSceneId
   const chips = activeTimelineFilterChips(project, filters)
   const characterOptions = [`<option value="">All characters</option>`]
     .concat(project.characters.map((character) => `<option value="${character.id}" ${character.id === filters.characterId ? 'selected' : ''}>${escapeHtml(character.name)}</option>`))
@@ -788,7 +789,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
                 const location = sceneLocation(project, scene)
                 const cast = scene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean).join(', ')
                 return `
-                  <article class="timeline-card timeline-card-clickable" data-action="open-scene-from-timeline" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">
+                  <article class="timeline-card timeline-card-clickable ${scene.id === activeSceneId ? 'active-arrival' : ''}" data-action="open-scene-from-timeline" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">
                     <div class="timeline-order">${scene.order}</div>
                     <div>
                       <p class="eyebrow">${escapeHtml(scene.timeLabel || 'Unscheduled')} · ${escapeHtml(chapter?.title || 'No chapter')}</p>
@@ -799,7 +800,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
                         <span>${escapeHtml(scene.status)}</span>
                         <span>${escapeHtml(cast || 'No characters')}</span>
                       </div>
-                      <p class="muted timeline-hint">Open in workspace</p>
+                      <p class="muted timeline-hint">${scene.id === activeSceneId ? 'Current scene' : 'Open in workspace'}</p>
                     </div>
                   </article>`
               })
@@ -895,8 +896,9 @@ function renderManuscript(project: StoryProject, scenes: Scene[]) {
 function renderManuscriptScene(project: StoryProject, scene: Scene) {
   const location = sceneLocation(project, scene)
   const cast = scene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean)
+  const isActive = scene.id === state.activeSceneId
   return `
-    <section class="manuscript-scene">
+    <section class="manuscript-scene ${isActive ? 'active-arrival' : ''}">
       <div class="manuscript-scene-head">
         <p class="eyebrow">Scene ${scene.order}${scene.timeLabel ? ` · ${escapeHtml(scene.timeLabel)}` : ''}</p>
         <h3>${escapeHtml(scene.title || 'Untitled scene')}</h3>
@@ -906,7 +908,7 @@ function renderManuscriptScene(project: StoryProject, scene: Scene) {
         <span>${escapeHtml(scene.status)}</span>
         <span>${escapeHtml(cast.join(', ') || 'No characters')}</span>
       </div>
-      <p class="manuscript-link-row"><button class="search-result" data-action="open-scene-from-manuscript" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">Open this scene in the workspace editor</button></p>
+      <p class="manuscript-link-row"><button class="search-result" data-action="open-scene-from-manuscript" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">${isActive ? 'Current scene in workspace' : 'Open this scene in the workspace editor'}</button></p>
       ${scene.summary ? `<p class="scene-summary">${escapeHtml(scene.summary)}</p>` : ''}
       <div class="scene-content-block">${scene.content ? scene.content.split(/\n{2,}/).map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`).join('') : '<p class="muted">No draft text yet.</p>'}</div>
     </section>

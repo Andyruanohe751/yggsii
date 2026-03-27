@@ -27,7 +27,7 @@ Why:
 - structured scene editor with summary, draft text, timeline label, chapter assignment, status, location, character presence, and direct jumps to manuscript, timeline, and meetings views
 - character inspector showing scene appearances with direct jump into scene editing
 - timeline view showing scene order, chapter, location, cast, and status
-- timeline search and filtering by text, character, location, and status, with filter state preserved while navigating
+- timeline search and filtering by text, character, location, and status, with filter state preserved while navigating and active-scene highlighting after view jumps
 - character meetings view showing who shares scenes and how often
 - read-only manuscript assembly view that compiles chapters, scenes, summaries, and draft text, with direct jump back into scene editing
 - dark mode and light mode toggle
