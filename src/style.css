@@ -169,6 +169,16 @@ h1, h2, h3, p { margin-top: 0; }
   border-radius: 18px;
   background: var(--panel-strong);
 }
+.timeline-card-clickable {
+  cursor: pointer;
+}
+.timeline-card-clickable:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.timeline-hint {
+  margin-top: 0.75rem;
+}
 .timeline-order {
   display: grid;
   place-items: center;

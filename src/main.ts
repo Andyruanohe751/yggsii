@@ -651,7 +651,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
                 const location = sceneLocation(project, scene)
                 const cast = scene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean).join(', ')
                 return `
-                  <article class="timeline-card">
+                  <article class="timeline-card timeline-card-clickable" data-action="open-scene-from-timeline" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">
                     <div class="timeline-order">${scene.order}</div>
                     <div>
                       <p class="eyebrow">${escapeHtml(scene.timeLabel || 'Unscheduled')} · ${escapeHtml(chapter?.title || 'No chapter')}</p>
@@ -662,6 +662,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
                         <span>${escapeHtml(scene.status)}</span>
                         <span>${escapeHtml(cast || 'No characters')}</span>
                       </div>
+                      <p class="muted timeline-hint">Open in workspace</p>
                     </div>
                   </article>`
               })
@@ -798,6 +799,11 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   on('[data-action="theme-toggle"]', () => update((draft) => { draft.theme = draft.theme === 'dark' ? 'light' : 'dark' }))
   on('[data-action="seed-reset"]', () => { if (confirm('Replace local data with the demo project?')) { state = defaultState(); saveState(); render() } })
   on('[data-action="clear-timeline-filters"]', () => update((draft) => { draft.timelineFilters = emptyTimelineFilters() }))
+  on('[data-action="open-scene-from-timeline"]', (element) => update((draft) => {
+    draft.view = 'workspace'
+    draft.activeSceneId = element.dataset.sceneId!
+    draft.activeChapterId = element.dataset.chapterId!
+  }))
   on('[data-chapter-id]', (element) => update((draft) => { draft.activeChapterId = element.dataset.chapterId! }))
   on('[data-scene-id]', (element) => update((draft) => { draft.activeSceneId = element.dataset.sceneId! }))
   on('[data-character-id]', (element) => update((draft) => { draft.activeCharacterId = element.dataset.characterId! }))

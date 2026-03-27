@@ -132,3 +132,5 @@ A clear-filters control is now in place too, which makes the timeline inspection
 If work resumes immediately, deepen search and filtering beyond the timeline.
 
 Good next slices would be workspace-wide search results, filter chips, and jumping straight from a result into the relevant scene, character, or location.
+
+Timeline results now jump directly back into the workspace scene editor, so the next ergonomic gain is probably filter chips and broader cross-entity search.
