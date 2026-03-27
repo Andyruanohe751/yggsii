@@ -133,4 +133,6 @@ If work resumes immediately, deepen search and filtering beyond the timeline.
 
 Good next slices would be workspace-wide search results, filter chips, and jumping straight from a result into the relevant scene, character, or location.
 
-Timeline results now jump directly back into the workspace scene editor, so the next ergonomic gain is probably filter chips and broader cross-entity search.
+Timeline results now jump directly back into the workspace scene editor.
+
+Active filter chips are now in place too, so the next ergonomic gain is probably broader cross-entity search beyond the timeline.

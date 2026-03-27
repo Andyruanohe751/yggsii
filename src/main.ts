@@ -617,9 +617,19 @@ function sceneMatchesTimelineFilters(project: StoryProject, scene: Scene, filter
   return true
 }
 
+function activeTimelineFilterChips(project: StoryProject, filters: TimelineFilters) {
+  const chips: { key: keyof TimelineFilters; label: string }[] = []
+  if (filters.query) chips.push({ key: 'query', label: `Search: ${filters.query}` })
+  if (filters.characterId) chips.push({ key: 'characterId', label: `Character: ${characterById(project, filters.characterId)?.name || 'Unknown'}` })
+  if (filters.locationId) chips.push({ key: 'locationId', label: `Location: ${project.locations.find((location) => location.id === filters.locationId)?.name || 'Unknown'}` })
+  if (filters.status) chips.push({ key: 'status', label: `Status: ${filters.status}` })
+  return chips
+}
+
 function renderTimeline(project: StoryProject, scenes: Scene[]) {
   const filters = state.timelineFilters
   const filteredScenes = scenes.filter((scene) => sceneMatchesTimelineFilters(project, scene, filters))
+  const chips = activeTimelineFilterChips(project, filters)
   const characterOptions = [`<option value="">All characters</option>`]
     .concat(project.characters.map((character) => `<option value="${character.id}" ${character.id === filters.characterId ? 'selected' : ''}>${escapeHtml(character.name)}</option>`))
     .join('')
@@ -641,6 +651,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
           <label>Location<select id="timeline-location">${locationOptions}</select></label>
           <label>Status<select id="timeline-status"><option value="">All statuses</option><option value="draft" ${filters.status === 'draft' ? 'selected' : ''}>draft</option><option value="outline" ${filters.status === 'outline' ? 'selected' : ''}>outline</option><option value="revised" ${filters.status === 'revised' ? 'selected' : ''}>revised</option></select></label>
         </div>
+        ${chips.length ? `<div class="filter-chip-row">${chips.map((chip) => `<button class="filter-chip" data-action="clear-timeline-filter" data-filter-key="${chip.key}">${escapeHtml(chip.label)} ×</button>`).join('')}</div>` : ''}
         <p class="muted">Showing ${filteredScenes.length} of ${scenes.length} scene${scenes.length === 1 ? '' : 's'}.</p>
       </div>
       <div class="timeline-list">
@@ -799,6 +810,11 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   on('[data-action="theme-toggle"]', () => update((draft) => { draft.theme = draft.theme === 'dark' ? 'light' : 'dark' }))
   on('[data-action="seed-reset"]', () => { if (confirm('Replace local data with the demo project?')) { state = defaultState(); saveState(); render() } })
   on('[data-action="clear-timeline-filters"]', () => update((draft) => { draft.timelineFilters = emptyTimelineFilters() }))
+  on('[data-action="clear-timeline-filter"]', (element) => update((draft) => {
+    const key = element.dataset.filterKey as keyof TimelineFilters
+    if (!key) return
+    draft.timelineFilters[key] = '' as never
+  }))
   on('[data-action="open-scene-from-timeline"]', (element) => update((draft) => {
     draft.view = 'workspace'
     draft.activeSceneId = element.dataset.sceneId!
