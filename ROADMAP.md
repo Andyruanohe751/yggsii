@@ -115,8 +115,16 @@ Tabletop GMs, game writers, and fanfiction writers may be easier early adopters 
 - Should manuscript assembly stay read-only for a while, or support editing early?
 - When portability exists, what is the simplest durable storage upgrade beyond raw localStorage?
 
+## Progress note
+
+Import and export are now in place.
+
+Safer editing flows now include character and location deletion with dependency-aware cleanup.
+
+The read-only manuscript assembly view is now in place as well, which means the next most natural build target is search and filtering.
+
 ## Practical next move
 
-If work resumes immediately, build import and export first.
+If work resumes immediately, build search and filtering.
 
-That is the highest leverage improvement because it reduces fear, improves trust, and makes every later feature more defensible.
+That is the highest leverage improvement now because it makes the app usable on larger projects and strengthens the core narrative-debugging pitch.

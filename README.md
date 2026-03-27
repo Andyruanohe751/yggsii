@@ -26,10 +26,12 @@ Why:
 - character inspector showing scene appearances
 - timeline view showing scene order, chapter, location, cast, and status
 - character meetings view showing who shares scenes and how often
+- read-only manuscript assembly view that compiles chapters, scenes, summaries, and draft text
 - dark mode and light mode toggle
 - local persistence with `localStorage`
 - project export as versioned JSON backup
 - project import from exported JSON with basic validation
+- dependency-aware character and location deletion that cleans linked scene references safely
 - seeded demo project so the app feels useful on first launch
 - restore-demo button for resetting the dataset quickly
 
@@ -63,7 +65,7 @@ npm run build
 
 - no backend or cross-device sync
 - import validation is intentionally basic and expects Yggsii-shaped JSON
-- character and location deletion are not implemented yet
+- manuscript assembly is read-only for now
 - timeline ordering is manual rather than calendar-aware
 - there is no rich text editor, just structured plain text fields
 - validation is intentionally light for speed

@@ -63,7 +63,7 @@ type AppState = {
   activeSceneId?: Id
   activeCharacterId?: Id
   theme: 'dark' | 'light'
-  view: 'workspace' | 'timeline' | 'meetings'
+  view: 'workspace' | 'timeline' | 'meetings' | 'manuscript'
 }
 
 const STORAGE_KEY = 'yggsii-mvp-v1'
@@ -420,6 +420,7 @@ function render() {
             <button data-view="workspace" class="${state.view === 'workspace' ? 'active' : ''}">Workspace</button>
             <button data-view="timeline" class="${state.view === 'timeline' ? 'active' : ''}">Timeline</button>
             <button data-view="meetings" class="${state.view === 'meetings' ? 'active' : ''}">Meetings</button>
+            <button data-view="manuscript" class="${state.view === 'manuscript' ? 'active' : ''}">Manuscript</button>
           </div>
         </section>
         <section class="panel stats-grid">
@@ -447,6 +448,7 @@ function render() {
         ${state.view === 'workspace' ? renderWorkspace(project, chapters, scenes, activeScene, activeCharacter) : ''}
         ${state.view === 'timeline' ? renderTimeline(project, scenes) : ''}
         ${state.view === 'meetings' ? renderMeetings(project, scenes) : ''}
+        ${state.view === 'manuscript' ? renderManuscript(project, scenes) : ''}
       </main>
     </div>
   `
@@ -637,6 +639,69 @@ function renderMeetings(project: StoryProject, scenes: Scene[]) {
               .join('')
           : '<p class="muted">No overlapping characters yet. Add multiple characters to a scene and this view will come alive.</p>'}
       </div>
+    </section>
+  `
+}
+
+function renderManuscript(project: StoryProject, scenes: Scene[]) {
+  const chapterMap = new Map(sortedChapters(project).map((chapter) => [chapter.id, chapter]))
+  const grouped = sortedChapters(project).map((chapter) => ({
+    chapter,
+    scenes: scenes.filter((scene) => scene.chapterId === chapter.id),
+  }))
+  const orphanScenes = scenes.filter((scene) => !chapterMap.has(scene.chapterId))
+
+  return `
+    <section class="panel manuscript-panel">
+      <div class="section-head manuscript-head">
+        <div>
+          <h3>Compiled manuscript</h3>
+          <p class="muted">A read-only assembly of the current project by chapter and scene order.</p>
+        </div>
+        <div class="manuscript-meta muted">${scenes.length} scene${scenes.length === 1 ? '' : 's'} across ${project.chapters.length} chapter${project.chapters.length === 1 ? '' : 's'}</div>
+      </div>
+      <article class="manuscript-body">
+        <header class="manuscript-cover">
+          <p class="eyebrow">Narrative debugging output</p>
+          <h1>${escapeHtml(project.title)}</h1>
+          <p>${escapeHtml(project.premise || 'No premise yet.')}</p>
+        </header>
+        ${grouped
+          .map(({ chapter, scenes: chapterScenes }) => `
+            <section class="manuscript-chapter">
+              <p class="eyebrow">Chapter ${chapter.order}</p>
+              <h2>${escapeHtml(chapter.title)}</h2>
+              ${chapter.summary ? `<p class="chapter-summary">${escapeHtml(chapter.summary)}</p>` : ''}
+              ${chapterScenes.length
+                ? chapterScenes.map((scene) => renderManuscriptScene(project, scene)).join('')
+                : '<p class="muted">No scenes in this chapter yet.</p>'}
+            </section>
+          `)
+          .join('')}
+        ${orphanScenes.length
+          ? `<section class="manuscript-chapter"><p class="eyebrow">Unassigned</p><h2>Scenes without a valid chapter</h2>${orphanScenes.map((scene) => renderManuscriptScene(project, scene)).join('')}</section>`
+          : ''}
+      </article>
+    </section>
+  `
+}
+
+function renderManuscriptScene(project: StoryProject, scene: Scene) {
+  const location = sceneLocation(project, scene)
+  const cast = scene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean)
+  return `
+    <section class="manuscript-scene">
+      <div class="manuscript-scene-head">
+        <p class="eyebrow">Scene ${scene.order}${scene.timeLabel ? ` · ${escapeHtml(scene.timeLabel)}` : ''}</p>
+        <h3>${escapeHtml(scene.title || 'Untitled scene')}</h3>
+      </div>
+      <div class="tag-row manuscript-tags">
+        <span>${escapeHtml(location?.name || 'No location')}</span>
+        <span>${escapeHtml(scene.status)}</span>
+        <span>${escapeHtml(cast.join(', ') || 'No characters')}</span>
+      </div>
+      ${scene.summary ? `<p class="scene-summary">${escapeHtml(scene.summary)}</p>` : ''}
+      <div class="scene-content-block">${scene.content ? scene.content.split(/\n{2,}/).map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`).join('') : '<p class="muted">No draft text yet.</p>'}</div>
     </section>
   `
 }
