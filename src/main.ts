@@ -229,7 +229,7 @@ function loadState(): AppState {
     const parsed = JSON.parse(raw) as Partial<AppState>
     if (!parsed.projects?.length) return fallback
 
-    const projects = parsed.projects.map((project) => normalizeProject(project as StoryProject))
+    const projects = parsed.projects.map((project) => normalizeProject(project as StoryProject).project)
     const activeProject = projects.find((project) => project.id === parsed.activeProjectId) ?? projects[0]
 
     return {
@@ -291,7 +291,7 @@ function sortedScenes(project: StoryProject) {
 }
 
 function ensureSelections(project: StoryProject) {
-  const safeProject = normalizeProject(project)
+  const { project: safeProject } = normalizeProject(project)
 
   if (!safeProject.chapters.find((chapter) => chapter.id === state.activeChapterId)) {
     state.activeChapterId = sortedChapters(safeProject)[0]?.id
@@ -343,16 +343,34 @@ function filenameSafe(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'story-project'
 }
 
-function normalizeProject(project: StoryProject): StoryProject {
-  const chapters = project.chapters?.length ? project.chapters : [{ id: makeId(), title: 'Chapter 1', summary: '', order: 1 }]
+type RepairNote = { message: string }
+
+function normalizeProject(project: StoryProject): { project: StoryProject; repairs: RepairNote[] } {
+  const repairs: RepairNote[] = []
+
+  const chapters = project.chapters?.length ? project.chapters : (() => {
+    repairs.push({ message: 'Added a default chapter.' })
+    return [{ id: makeId(), title: 'Chapter 1', summary: '', order: 1 }]
+  })()
+
   const scenes = project.scenes?.length
-    ? project.scenes.map((scene, index) => ({ ...scene, order: Number(scene.order) || index + 1, characterIds: Array.isArray(scene.characterIds) ? scene.characterIds : [] }))
-    : [{ id: makeId(), chapterId: chapters[0].id, title: 'Opening scene', summary: '', content: '', order: 1, timeLabel: 'Day 1', characterIds: [], status: 'draft' as const }]
+    ? project.scenes.map((scene, index) => {
+        const repaired = { ...scene, order: Number(scene.order) || index + 1, characterIds: Array.isArray(scene.characterIds) ? scene.characterIds : [] }
+        if (!Array.isArray(scene.characterIds)) repairs.push({ message: 'Rebuilt missing character link lists.' })
+        return repaired
+      })
+    : (() => {
+        repairs.push({ message: 'Created a fallback opening scene.' })
+        return [{ id: makeId(), chapterId: chapters[0].id, title: 'Opening scene', summary: '', content: '', order: 1, timeLabel: 'Day 1', characterIds: [], status: 'draft' as const }]
+      })()
 
   const characterIds = new Set((project.characters ?? []).map((character) => character.id))
   const sceneIds = new Set(scenes.map((scene) => scene.id))
 
-  return {
+  if (!project.characters?.length) repairs.push({ message: 'No characters found in backup.' })
+  if (!project.locations?.length) repairs.push({ message: 'No locations found in backup.' })
+
+  const normalized: StoryProject = {
     ...project,
     chapters: chapters.map((chapter, index) => ({ ...chapter, order: Number(chapter.order) || index + 1 })),
     scenes,
@@ -366,6 +384,8 @@ function normalizeProject(project: StoryProject): StoryProject {
     createdAt: project.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
+
+  return { project: normalized, repairs }
 }
 
 function isStoryProject(value: unknown): value is StoryProject {
@@ -374,8 +394,9 @@ function isStoryProject(value: unknown): value is StoryProject {
   return typeof project.id === 'string' && typeof project.title === 'string' && Array.isArray(project.chapters) && Array.isArray(project.scenes) && Array.isArray(project.characters) && Array.isArray(project.locations) && Array.isArray(project.reveals ?? [])
 }
 
-function importProjectRecord(project: StoryProject, replaceActive = false) {
-  const normalized = normalizeProject(project)
+function importProjectRecord(project: StoryProject, replaceActive = false, repairs: RepairNote[] = []) {
+  const { project: normalized, repairs: newRepairs } = normalizeProject(project)
+  const allRepairs = [...repairs, ...newRepairs]
   update((draft) => {
     if (replaceActive) {
       draft.projects = [normalized, ...draft.projects.filter((item) => item.id !== draft.activeProjectId && item.id !== normalized.id)]
@@ -389,6 +410,7 @@ function importProjectRecord(project: StoryProject, replaceActive = false) {
     draft.activeLocationId = normalized.locations[0]?.id
     draft.activeRevealId = normalized.reveals[0]?.id
   })
+  return allRepairs
 }
 
 function exportProject(project: StoryProject) {
@@ -402,19 +424,34 @@ function exportProject(project: StoryProject) {
 
 async function importProjectFile(file?: File | null) {
   if (!file) return
+  let raw: string
   try {
-    const raw = await file.text()
-    const parsed = JSON.parse(raw) as ProjectBackup | StoryProject
-    const project = 'project' in parsed ? parsed.project : parsed
-    if (!isStoryProject(project)) {
-      alert('Import failed. That file does not look like a valid Yggsii project backup.')
-      return
-    }
-    const normalized = normalizeProject(project)
-    importProjectRecord(normalized)
-    alert(`Imported ${normalized.title || 'project'} with ${normalized.scenes.length} scene${normalized.scenes.length === 1 ? '' : 's'}, ${normalized.characters.length} character${normalized.characters.length === 1 ? '' : 's'}, ${normalized.locations.length} location${normalized.locations.length === 1 ? '' : 's'}, and ${normalized.reveals.length} reveal record${normalized.reveals.length === 1 ? '' : 's'}.`)
+    raw = await file.text()
   } catch {
-    alert('Import failed. Check that the file is valid JSON exported from Yggsii, and that it still contains a project-shaped data structure.')
+    alert('Import failed. Could not read the file.')
+    return
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    alert('Import failed. This file could not be parsed as JSON.\n\nCheck that it was exported correctly from Yggsii and was not edited into an invalid state.')
+    return
+  }
+
+  const project = (parsed as Record<string, unknown>)?.project ?? parsed
+  if (!isStoryProject(project)) {
+    alert('Import failed. This file is readable JSON, but it does not look like a Yggsii project backup.\n\nImport expects either a direct project record or an exported backup with a project field.')
+    return
+  }
+
+  const repairs = importProjectRecord(project as StoryProject)
+  const baseMessage = `Imported ${(project as StoryProject).title || 'project'} with ${(project as StoryProject).scenes.length} scene${(project as StoryProject).scenes.length === 1 ? '' : 's'}, ${(project as StoryProject).characters.length} character${(project as StoryProject).characters.length === 1 ? '' : 's'}, ${(project as StoryProject).locations.length} location${(project as StoryProject).locations.length === 1 ? '' : 's'}, and ${(project as StoryProject).reveals.length} reveal record${(project as StoryProject).reveals.length === 1 ? '' : 's'}.`
+  if (repairs.length) {
+    alert(`${baseMessage}\n\nYggsii repaired some missing structure so the project can open safely:\n${repairs.map((r) => `  - ${r.message}`).join('\n')}`)
+  } else {
+    alert(baseMessage)
   }
 }
 
