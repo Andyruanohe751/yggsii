@@ -198,3 +198,5 @@ A concrete safer-editing handoff now lives at `docs/safer-editing-pass-plan.md`,
 A first safer-editing slice is now in place too, with clearer scene and reveal deletion warnings, less abrupt demo-reset copy, and a small import success summary after project load.
 
 Character and location deletion copy is now clearer as well, explicitly framing those actions as record removal plus scene unlinking rather than vague deletion language.
+
+A small import-specific follow-up note now also lives at `docs/import-feedback-followup.md`, keeping the next trust improvement focused on clearer failure reasons and more honest repair messaging when import structure needs normalization.
