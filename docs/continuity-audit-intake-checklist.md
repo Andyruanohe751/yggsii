@@ -106,10 +106,11 @@ The service now has:
 - a one-page offer sheet
 - a mock-client pressure test
 
-## Current reusable workflow tool
+## Current reusable workflow tools
 
 - `reveal-ledger-template.md` for knowledge-state continuity, secrets, and reveal-order tracking
+- `travel-spine-template.md` for movement logic, urgency, and consequence tracking
 
 ## Next packaging move
 
-Extract a second reusable tool from the campaign sample, likely a travel spine or absence-tracking template.
+Extract a third reusable campaign-specific tool, likely an absence-tracking template for cast dropout, reference, and reintegration.
