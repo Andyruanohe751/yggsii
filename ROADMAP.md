@@ -175,6 +175,8 @@ A one-click clear control is now in place too, which makes repeated inspection l
 
 Timeline cards now also surface reveal-link counts, which helps continuity records show up in chronology inspection instead of living only in workspace-specific surfaces.
 
+Timeline search now also looks through linked reveal text, which makes continuity queries work more naturally from the chronology view.
+
 The next likely product-facing gain is either another small relevance improvement or more structural ranking inside meetings.
 
 Meetings ranking is now slightly more opinionated too, because active ensemble pairs sort ahead of merely historical pair frequency.

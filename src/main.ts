@@ -899,6 +899,7 @@ function renderRevealEditor(project: StoryProject, reveal: RevealRecord) {
 function sceneMatchesTimelineFilters(project: StoryProject, scene: Scene, filters: TimelineFilters) {
   const location = sceneLocation(project, scene)
   const cast = scene.characterIds.map((id) => characterById(project, id)).filter(Boolean) as Character[]
+  const revealLinks = sceneRevealLinks(project, scene.id)
   const haystack = [
     scene.title,
     scene.summary,
@@ -907,6 +908,7 @@ function sceneMatchesTimelineFilters(project: StoryProject, scene: Scene, filter
     location?.name || '',
     location?.details || '',
     ...cast.flatMap((character) => [character.name, character.role, character.notes]),
+    ...revealLinks.flatMap((reveal) => [reveal.title, reveal.publicStory, reveal.underlyingTruth, reveal.revealPoint, reveal.notes]),
   ].join(' ').toLowerCase()
   const query = filters.query.trim().toLowerCase()
 
@@ -946,7 +948,7 @@ function renderTimeline(project: StoryProject, scenes: Scene[]) {
           <h3>Filters</h3>
           <button data-action="clear-timeline-filters">Clear filters</button>
         </div>
-        <label>Search<input id="timeline-query" placeholder="Search scenes, characters, or locations" value="${escapeAttr(filters.query)}" /></label>
+        <label>Search<input id="timeline-query" placeholder="Search scenes, characters, locations, or linked reveals" value="${escapeAttr(filters.query)}" /></label>
         <div class="split-3">
           <label>Character<select id="timeline-character">${characterOptions}</select></label>
           <label>Location<select id="timeline-location">${locationOptions}</select></label>
