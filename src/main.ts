@@ -1082,7 +1082,7 @@ function renderMeetings(project: StoryProject, scenes: Scene[]) {
         </div>
       ` : ''}
       ${activeScene && activeNames.length > 2 ? `<div class="panel-subtle arrival-note"><p class="muted">Current scene, ${escapeHtml(activeScene.title || 'Untitled scene')}${activeScene.timeLabel ? ` at ${escapeHtml(activeScene.timeLabel)}` : ''}${sceneLocation(project, activeScene)?.name ? ` in ${escapeHtml(sceneLocation(project, activeScene)?.name || '')}` : ''}, has cast: ${escapeHtml(activeNames.join(', '))}. Pair highlighting is partial here because the scene has more than two characters.</p><p class="manuscript-link-row"><button class="search-result" data-action="open-scene-from-meetings" data-scene-id="${activeScene.id}" data-chapter-id="${activeScene.chapterId}">Return to the current scene editor</button></p></div>` : ''}
-      ${rows.length ? `<p class="muted meetings-ranking-note">Showing ${activePairCount} current-scene pair${activePairCount === 1 ? '' : 's'} first${ensemblePairCount ? `, including ${ensemblePairCount} active-ensemble pair${ensemblePairCount === 1 ? '' : 's'}` : ''}, before broader historical overlap.</p>` : ''}
+      ${rows.length ? `<p class="muted meetings-ranking-note">${activePairCount ? `Showing ${activePairCount} current-scene pair${activePairCount === 1 ? '' : 's'} first${ensemblePairCount ? `, including ${ensemblePairCount} active-ensemble pair${ensemblePairCount === 1 ? '' : 's'}` : ''}, before broader historical overlap.` : 'Showing pairs by shared-scene frequency, with current-scene context promoted when available.'}</p>` : ''}
       <div class="meeting-grid">
         ${rows.length
           ? rows

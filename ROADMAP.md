@@ -177,4 +177,6 @@ Meetings ranking is now slightly more opinionated too, because active ensemble p
 
 Meetings now also explains that ranking more clearly with a tiny note above the cards, so the ordering no longer feels like hidden logic.
 
+That explanation now degrades more cleanly too when there is no meaningful active-scene context, instead of implying ranking logic that is not actually in play.
+
 The next likely software-facing gain is either another small search-quality pass or a more explicit meetings distinction between current-scene relevance and long-run importance.
