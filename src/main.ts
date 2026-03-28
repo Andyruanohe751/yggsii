@@ -1326,7 +1326,7 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     const character = project.characters.find((item) => item.id === characterId)
     if (!character) return
     const appearances = characterAppearances(project, characterId)
-    const warning = `Delete ${character.name}?\n\nThis will remove the character from the project and from any linked scenes.\n\n${describeReferencedScenes(appearances)}`
+    const warning = `Delete ${character.name}?\n\nThis removes the character record from the project and unlinks the character from any scenes where they currently appear.\n\n${describeReferencedScenes(appearances)}`
     if (confirm(warning)) deleteCharacter(characterId)
   })
   on('[data-action="delete-location"]', (element) => {
@@ -1334,7 +1334,7 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     const location = project.locations.find((item) => item.id === locationId)
     if (!location) return
     const references = locationReferences(project, locationId)
-    const warning = `Delete ${location.name}?\n\nThis will remove the location from the project and clear it from any linked scenes.\n\n${describeReferencedScenes(references)}`
+    const warning = `Delete ${location.name}?\n\nThis removes the location record from the project and clears it from any scenes that currently point to it.\n\n${describeReferencedScenes(references)}`
     if (confirm(warning)) deleteLocation(locationId)
   })
   on('[data-action="delete-reveal"]', (element) => {

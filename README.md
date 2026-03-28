@@ -36,7 +36,7 @@ Why:
 - local persistence with `localStorage`
 - project export as versioned JSON backup
 - project import from exported JSON with basic validation
-- dependency-aware deletion flows with clearer confirmation language for scenes, characters, locations, and reveals, plus safer demo-reset copy
+- dependency-aware deletion flows with clearer confirmation language for scenes, characters, locations, and reveals, plus safer demo-reset copy and plainer unlink-versus-delete consequences
 - import from exported JSON with basic validation and a small success summary after load
 - seeded demo project so the app feels useful on first launch
 - restore-demo button for resetting the dataset quickly
