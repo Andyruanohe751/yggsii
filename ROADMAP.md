@@ -164,3 +164,5 @@ Tiny reveal-aware integrations are now in place too, including workspace search 
 The next continuation point is either a deeper second-pass model once real use exposes the right pressure points, or a pause to evaluate whether the current reveal surface is already enough signal for now.
 
 That evaluation now lives at `docs/reveal-surface-evaluation.md`, with the current recommendation being restraint: small reveal-aware integrations are still sensible, but a heavier second-pass model should wait for a real pressure point.
+
+A packaging reset note now also lives at `docs/post-launch-packaging-reset.md`, explicitly pushing future heartbeats back toward product trust, search and meetings improvements, and visual proof rather than further launch-prose accumulation.
