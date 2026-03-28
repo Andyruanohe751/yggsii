@@ -1147,6 +1147,7 @@ function renderManuscript(project: StoryProject, scenes: Scene[]) {
 function renderManuscriptScene(project: StoryProject, scene: Scene) {
   const location = sceneLocation(project, scene)
   const cast = scene.characterIds.map((id) => characterById(project, id)?.name).filter(Boolean)
+  const revealCount = sceneRevealLinks(project, scene.id).length
   const isActive = scene.id === state.activeSceneId
   return `
     <section class="manuscript-scene ${isActive ? 'active-arrival' : ''}">
@@ -1158,6 +1159,7 @@ function renderManuscriptScene(project: StoryProject, scene: Scene) {
         <span>${escapeHtml(location?.name || 'No location')}</span>
         <span>${escapeHtml(scene.status)}</span>
         <span>${escapeHtml(cast.join(', ') || 'No characters')}</span>
+        <span>${revealCount} reveal link${revealCount === 1 ? '' : 's'}</span>
       </div>
       <p class="manuscript-link-row"><button class="search-result" data-action="open-scene-from-manuscript" data-scene-id="${scene.id}" data-chapter-id="${scene.chapterId}">${isActive ? 'Current scene in workspace' : 'Open this scene in the workspace editor'}</button></p>
       ${scene.summary ? `<p class="scene-summary">${escapeHtml(scene.summary)}</p>` : ''}

@@ -177,6 +177,8 @@ Timeline cards now also surface reveal-link counts, which helps continuity recor
 
 Timeline search now also looks through linked reveal text, which makes continuity queries work more naturally from the chronology view.
 
+Manuscript scene tags now also surface reveal-link counts, so continuity records are visible in read-through mode as well instead of only in workspace and timeline surfaces.
+
 The next likely product-facing gain is either another small relevance improvement or more structural ranking inside meetings.
 
 Meetings ranking is now slightly more opinionated too, because active ensemble pairs sort ahead of merely historical pair frequency.
