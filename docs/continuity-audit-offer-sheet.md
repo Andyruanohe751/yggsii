@@ -120,6 +120,7 @@ That means every audit can improve:
 - intake path: `continuity-audit-intake-checklist.md`
 - reusable workflow tool, knowledge-state tracking: `reveal-ledger-template.md`
 - reusable workflow tool, movement and urgency tracking: `travel-spine-template.md`
+- reusable workflow tool, cast dropout and return tracking: `absence-tracking-template.md`
 
 ## Next validation move
 

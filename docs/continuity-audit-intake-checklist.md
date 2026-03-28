@@ -110,7 +110,8 @@ The service now has:
 
 - `reveal-ledger-template.md` for knowledge-state continuity, secrets, and reveal-order tracking
 - `travel-spine-template.md` for movement logic, urgency, and consequence tracking
+- `absence-tracking-template.md` for cast dropout, reference, reintegration, and return payoff tracking
 
 ## Next packaging move
 
-Extract a third reusable campaign-specific tool, likely an absence-tracking template for cast dropout, reference, and reintegration.
+Turn these campaign-specific tools into a tighter bundled audit workflow note, so the service can show not just components but a clear operating sequence.
