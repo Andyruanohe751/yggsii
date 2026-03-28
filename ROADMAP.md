@@ -190,3 +190,5 @@ Meetings now also explains that ranking more clearly with a tiny note above the 
 That explanation now degrades more cleanly too when there is no meaningful active-scene context, instead of implying ranking logic that is not actually in play.
 
 The next likely software-facing gain is either another small search-quality pass or a more explicit meetings distinction between current-scene relevance and long-run importance.
+
+An overnight handoff note now also lives at `docs/overnight-next-step-bias.md`, explicitly pushing the next heartbeat toward a larger trust-building or onboarding move instead of another microscopic continuity polish pass.
