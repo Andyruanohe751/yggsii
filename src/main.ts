@@ -766,6 +766,7 @@ function renderSceneEditor(project: StoryProject, scene: Scene) {
     <label>Summary<textarea id="scene-summary">${escapeHtml(scene.summary)}</textarea></label>
     <label>Draft text<textarea id="scene-content" class="large">${escapeHtml(scene.content)}</textarea></label>
     <p class="muted">Linked reveal records: ${revealLinks.length}.</p>
+    ${revealLinks.length ? `<div class="tag-row reveal-badge-row">${revealLinks.map((reveal) => `<button class="reveal-badge" data-reveal-id="${reveal.id}">${escapeHtml(reveal.title || 'Untitled reveal')}</button>`).join('')}</div>` : ''}
     <fieldset class="character-picker">
       <legend>Characters in this scene</legend>
       ${project.characters
@@ -789,6 +790,7 @@ function renderCharacterEditor(project: StoryProject, character: Character) {
     <label>Role<input id="character-role" value="${escapeAttr(character.role)}" /></label>
     <label>Notes<textarea id="character-notes">${escapeHtml(character.notes)}</textarea></label>
     <p class="muted">Appears in ${appearances.length} scene${appearances.length === 1 ? '' : 's'} and links to ${reveals.length} reveal${reveals.length === 1 ? '' : 's'}.</p>
+    ${reveals.length ? `<div class="tag-row reveal-badge-row">${reveals.map((reveal) => `<button class="reveal-badge" data-reveal-id="${reveal.id}">${escapeHtml(reveal.title || 'Untitled reveal')}</button>`).join('')}</div>` : ''}
     <div class="mini-list">
       ${appearances.length
         ? appearances
