@@ -262,6 +262,9 @@ h1, h2, h3, p { margin-top: 0; }
 }
 .meeting-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .meeting-card { grid-template-columns: 1fr; }
+.meetings-ranking-note {
+  margin: 0 0 0.9rem;
+}
 .ensemble-summary {
   display: grid;
   gap: 1rem;

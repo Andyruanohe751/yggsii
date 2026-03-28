@@ -175,4 +175,6 @@ The next likely product-facing gain is either another small relevance improvemen
 
 Meetings ranking is now slightly more opinionated too, because active ensemble pairs sort ahead of merely historical pair frequency.
 
+Meetings now also explains that ranking more clearly with a tiny note above the cards, so the ordering no longer feels like hidden logic.
+
 The next likely software-facing gain is either another small search-quality pass or a more explicit meetings distinction between current-scene relevance and long-run importance.
