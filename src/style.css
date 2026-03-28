@@ -169,6 +169,10 @@ h1, h2, h3, p { margin-top: 0; }
 .workspace-search-panel {
   margin-bottom: 1rem;
 }
+.search-summary {
+  margin-top: 0.6rem;
+  margin-bottom: 0.2rem;
+}
 .search-results {
   margin-top: 0.75rem;
 }

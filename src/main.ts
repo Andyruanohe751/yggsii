@@ -681,12 +681,16 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
   const activeLocation = project.locations.find((location) => location.id === state.activeLocationId) ?? project.locations[0]
   const results = workspaceSearchResults(project, state.workspaceQuery)
   const revealRows = sortedReveals(project)
+  const resultSummary = results.length
+    ? `${results.length} match${results.length === 1 ? '' : 'es'} across ${new Set(results.map((result) => result.type)).size} section${new Set(results.map((result) => result.type)).size === 1 ? '' : 's'}`
+    : 'No workspace matches yet.'
   return `
     <section class="workspace-grid">
       <div class="panel column-list">
         <div class="section-head"><h3>Chapters and scenes</h3><button data-action="add-chapter">Add chapter</button></div>
         <div class="panel-subtle workspace-search-panel">
-          <label>Workspace search<input id="workspace-query" placeholder="Search scenes, characters, and locations" value="${escapeAttr(state.workspaceQuery)}" /></label>
+          <label>Workspace search<input id="workspace-query" placeholder="Search scenes, characters, locations, and reveals" value="${escapeAttr(state.workspaceQuery)}" /></label>
+          ${state.workspaceQuery.trim() ? `<p class="muted search-summary">${escapeHtml(resultSummary)}</p>` : ''}
           ${state.workspaceQuery.trim()
             ? results.length
               ? `${(['scene', 'character', 'location', 'reveal'] as const)
@@ -699,7 +703,7 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
                   })
                   .join('')}`
               : '<p class="muted">No workspace matches yet.</p>'
-            : '<p class="muted">Search across scenes, characters, and locations.</p>'}
+            : '<p class="muted">Search across scenes, characters, locations, and reveal records.</p>'}
         </div>
         ${chapters
           .map((chapter) => {

@@ -169,4 +169,6 @@ A packaging reset note now also lives at `docs/post-launch-packaging-reset.md`, 
 
 Workspace search ranking is now slightly smarter as well, because scene results include linked chapter, location, and cast context, while reveal results include linked scenes and characters.
 
+Workspace search now also gives a small match summary, which makes result piles easier to parse at a glance when a query hits multiple entity types.
+
 The next likely product-facing gain is either another small relevance improvement or more structural ranking inside meetings.
