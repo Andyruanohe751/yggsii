@@ -557,7 +557,7 @@ function render() {
 }
 
 type WorkspaceSearchResult = {
-  type: 'scene' | 'character' | 'location'
+  type: 'scene' | 'character' | 'location' | 'reveal'
   id: string
   chapterId?: string
   title: string
@@ -626,7 +626,21 @@ function workspaceSearchResults(project: StoryProject, query: string): Workspace
       score,
     }))
 
-  return [...sceneResults, ...characterResults, ...locationResults]
+  const revealResults = project.reveals
+    .map((reveal) => ({
+      reveal,
+      score: scoreMatch(reveal.title, reveal.publicStory, reveal.underlyingTruth, reveal.revealPoint, reveal.notes)(needle),
+    }))
+    .filter(({ score }) => score > 0)
+    .map(({ reveal, score }) => ({
+      type: 'reveal' as const,
+      id: reveal.id,
+      title: reveal.title || 'Untitled reveal',
+      meta: reveal.revealPoint || 'Reveal record',
+      score,
+    }))
+
+  return [...sceneResults, ...characterResults, ...locationResults, ...revealResults]
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
     .slice(0, 12)
 }
@@ -643,12 +657,12 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
           <label>Workspace search<input id="workspace-query" placeholder="Search scenes, characters, and locations" value="${escapeAttr(state.workspaceQuery)}" /></label>
           ${state.workspaceQuery.trim()
             ? results.length
-              ? `${(['scene', 'character', 'location'] as const)
+              ? `${(['scene', 'character', 'location', 'reveal'] as const)
                   .map((type) => {
                     const rows = results.filter((result) => result.type === type)
                     if (!rows.length) return ''
-                    return `<div class="search-group"><p class="eyebrow">${type === 'scene' ? 'Scenes' : type === 'character' ? 'Characters' : 'Locations'}</p><div class="mini-list search-results">${rows
-                      .map((result) => `<button class="search-result" data-action="open-search-result" data-result-type="${result.type}" data-result-id="${result.id}" data-chapter-id="${result.chapterId || ''}"><strong>${escapeHtml(result.title)}</strong><span>${escapeHtml(result.type)} · ${escapeHtml(result.meta)}</span><span class="search-result-hint">${result.type === 'location' ? 'Open in workspace location inspector' : 'Open in workspace'} · rank ${result.score}</span></button>`)
+                    return `<div class="search-group"><p class="eyebrow">${type === 'scene' ? 'Scenes' : type === 'character' ? 'Characters' : type === 'location' ? 'Locations' : 'Reveals'}</p><div class="mini-list search-results">${rows
+                      .map((result) => `<button class="search-result" data-action="open-search-result" data-result-type="${result.type}" data-result-id="${result.id}" data-chapter-id="${result.chapterId || ''}"><strong>${escapeHtml(result.title)}</strong><span>${escapeHtml(result.type)} · ${escapeHtml(result.meta)}</span><span class="search-result-hint">${result.type === 'location' ? 'Open in workspace location inspector' : result.type === 'reveal' ? 'Open in workspace reveal editor' : 'Open in workspace'} · rank ${result.score}</span></button>`)
                       .join('')}</div></div>`
                   })
                   .join('')}`
@@ -671,6 +685,7 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
                     <button class="scene-card ${scene.id === state.activeSceneId ? 'active' : ''}" data-scene-id="${scene.id}">
                       <strong>${scene.order}. ${escapeHtml(scene.title)}</strong>
                       <span>${escapeHtml(scene.timeLabel || 'Unscheduled')}</span>
+                      <span class="scene-card-meta">${sceneRevealLinks(project, scene.id).length} reveal link${sceneRevealLinks(project, scene.id).length === 1 ? '' : 's'}</span>
                     </button>`,
                     )
                     .join('')}
@@ -1152,6 +1167,10 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     if (resultType === 'location') {
       draft.view = 'workspace'
       draft.activeLocationId = resultId
+    }
+    if (resultType === 'reveal') {
+      draft.view = 'workspace'
+      draft.activeRevealId = resultId
     }
   }))
   on('[data-action="open-scene-from-location"]', (element) => update((draft) => {

@@ -159,4 +159,6 @@ That note now has a concrete first-pass handoff at `docs/reveal-ledger-implement
 
 A first reveal-ledger slice is now in place in the workspace as project-level reveal records with scene and character links, local persistence, and import/export support.
 
-The next continuation point is either tiny integrations, like reveal-aware scene or character badges, or a deeper second-pass model once real use exposes the right pressure points.
+Tiny reveal-aware integrations are now in place too, including workspace search results for reveal records and scene-list linkage hints.
+
+The next continuation point is either a few more inspector-level reveal badges, or a deeper second-pass model once real use exposes the right pressure points.

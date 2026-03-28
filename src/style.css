@@ -133,6 +133,12 @@ h1, h2, h3, p { margin-top: 0; }
 .column-list, .editor-panel, .inspector-panel { overflow: auto; }
 .chapter-block { margin-bottom: 1rem; }
 .scene-list { display: grid; gap: 0.55rem; margin-top: 0.55rem; }
+.scene-card-meta {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
 .ghost-button {
   border-style: dashed;
   background: transparent;
