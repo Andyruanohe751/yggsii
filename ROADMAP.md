@@ -171,6 +171,8 @@ Workspace search ranking is now slightly smarter as well, because scene results 
 
 Workspace search now also gives a small match summary, which makes result piles easier to parse at a glance when a query hits multiple entity types.
 
+A one-click clear control is now in place too, which makes repeated inspection loops a little less fiddly.
+
 The next likely product-facing gain is either another small relevance improvement or more structural ranking inside meetings.
 
 Meetings ranking is now slightly more opinionated too, because active ensemble pairs sort ahead of merely historical pair frequency.

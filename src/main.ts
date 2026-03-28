@@ -689,6 +689,7 @@ function renderWorkspace(project: StoryProject, chapters: Chapter[], scenes: Sce
       <div class="panel column-list">
         <div class="section-head"><h3>Chapters and scenes</h3><button data-action="add-chapter">Add chapter</button></div>
         <div class="panel-subtle workspace-search-panel">
+          <div class="section-head inline-head workspace-search-head"><h3>Workspace search</h3>${state.workspaceQuery.trim() ? '<button data-action="clear-workspace-query">Clear</button>' : ''}</div>
           <label>Workspace search<input id="workspace-query" placeholder="Search scenes, characters, locations, and reveals" value="${escapeAttr(state.workspaceQuery)}" /></label>
           ${state.workspaceQuery.trim() ? `<p class="muted search-summary">${escapeHtml(resultSummary)}</p>` : ''}
           ${state.workspaceQuery.trim()
@@ -1263,6 +1264,7 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   on('[data-character-id]', (element) => update((draft) => { draft.activeCharacterId = element.dataset.characterId! }))
   on('[data-location-id]', (element) => update((draft) => { draft.activeLocationId = element.dataset.locationId! }))
   on('[data-reveal-id]', (element) => update((draft) => { draft.activeRevealId = element.dataset.revealId! }))
+  on('[data-action="clear-workspace-query"]', () => update((draft) => { draft.workspaceQuery = '' }))
   on('[data-action="add-chapter"]', () => update(() => {
     const current = getProject()
     const chapter = { id: makeId(), title: `Chapter ${current.chapters.length + 1}`, summary: '', order: current.chapters.length + 1 }

@@ -169,6 +169,9 @@ h1, h2, h3, p { margin-top: 0; }
 .workspace-search-panel {
   margin-bottom: 1rem;
 }
+.workspace-search-head {
+  margin-bottom: 0.75rem;
+}
 .search-summary {
   margin-top: 0.6rem;
   margin-bottom: 0.2rem;
