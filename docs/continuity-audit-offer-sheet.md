@@ -121,6 +121,7 @@ That means every audit can improve:
 - reusable workflow tool, knowledge-state tracking: `reveal-ledger-template.md`
 - reusable workflow tool, movement and urgency tracking: `travel-spine-template.md`
 - reusable workflow tool, cast dropout and return tracking: `absence-tracking-template.md`
+- bundled method note for campaign-shaped work: `campaign-audit-workflow.md`
 
 ## Next validation move
 

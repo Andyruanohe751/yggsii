@@ -112,6 +112,10 @@ The service now has:
 - `travel-spine-template.md` for movement logic, urgency, and consequence tracking
 - `absence-tracking-template.md` for cast dropout, reference, reintegration, and return payoff tracking
 
+## Current bundled workflow note
+
+- `campaign-audit-workflow.md` for the operating sequence across reveal logic, movement, and absence handling
+
 ## Next packaging move
 
-Turn these campaign-specific tools into a tighter bundled audit workflow note, so the service can show not just components but a clear operating sequence.
+Return to Yggsii product work and ask which parts of this audit workflow should become first-class app support rather than manual service scaffolding.
