@@ -194,3 +194,5 @@ The next likely software-facing gain is either another small search-quality pass
 An overnight handoff note now also lives at `docs/overnight-next-step-bias.md`, explicitly pushing the next heartbeat toward a larger trust-building or onboarding move instead of another microscopic continuity polish pass.
 
 A concrete safer-editing handoff now lives at `docs/safer-editing-pass-plan.md`, centred on deletion clarity, import feedback, demo-reset trust, and other higher-trust flows rather than more inspection-surface nibbling.
+
+A first safer-editing slice is now in place too, with clearer scene and reveal deletion warnings, less abrupt demo-reset copy, and a small import success summary after project load.

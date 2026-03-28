@@ -407,12 +407,14 @@ async function importProjectFile(file?: File | null) {
     const parsed = JSON.parse(raw) as ProjectBackup | StoryProject
     const project = 'project' in parsed ? parsed.project : parsed
     if (!isStoryProject(project)) {
-      alert('That file does not look like a valid Yggsii project backup.')
+      alert('Import failed. That file does not look like a valid Yggsii project backup.')
       return
     }
-    importProjectRecord(project)
+    const normalized = normalizeProject(project)
+    importProjectRecord(normalized)
+    alert(`Imported ${normalized.title || 'project'} with ${normalized.scenes.length} scene${normalized.scenes.length === 1 ? '' : 's'}, ${normalized.characters.length} character${normalized.characters.length === 1 ? '' : 's'}, ${normalized.locations.length} location${normalized.locations.length === 1 ? '' : 's'}, and ${normalized.reveals.length} reveal record${normalized.reveals.length === 1 ? '' : 's'}.`)
   } catch {
-    alert('Import failed. Check that the file is valid JSON exported from Yggsii.')
+    alert('Import failed. Check that the file is valid JSON exported from Yggsii, and that it still contains a project-shaped data structure.')
   }
 }
 
@@ -1193,7 +1195,10 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
   on('[data-action="project-export"]', () => exportProject(project))
   on('[data-action="project-import"]', () => document.getElementById('project-import-file')?.click())
   on('[data-action="theme-toggle"]', () => update((draft) => { draft.theme = draft.theme === 'dark' ? 'light' : 'dark' }))
-  on('[data-action="seed-reset"]', () => { if (confirm('Replace local data with the demo project?')) { state = defaultState(); saveState(); render() } })
+  on('[data-action="seed-reset"]', () => {
+    const warning = 'Replace local data with the demo project?\n\nThis will overwrite the current in-browser Yggsii state with the seeded demo project. If you want to keep your current work, export a backup first.'
+    if (confirm(warning)) { state = defaultState(); saveState(); render() }
+  })
   on('[data-action="clear-timeline-filters"]', () => update((draft) => { draft.timelineFilters = emptyTimelineFilters() }))
   on('[data-action="clear-timeline-filter"]', (element) => update((draft) => {
     const key = element.dataset.filterKey as keyof TimelineFilters
@@ -1310,7 +1315,11 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     stamp(current)
   }))
   on('[data-action="delete-scene"]', (element) => {
-    if (confirm('Delete this scene?')) deleteScene(element.dataset.sceneId!)
+    const sceneId = element.dataset.sceneId!
+    const scene = project.scenes.find((item) => item.id === sceneId)
+    if (!scene) return
+    const warning = `Delete ${scene.title || 'this scene'}?\n\nThis removes the scene from the project. Yggsii will keep the project structurally safe by ensuring at least one scene still exists.`
+    if (confirm(warning)) deleteScene(sceneId)
   })
   on('[data-action="delete-character"]', (element) => {
     const characterId = element.dataset.characterId!
@@ -1332,7 +1341,8 @@ function bindEvents(project: StoryProject, activeScene?: Scene, activeCharacter?
     const revealId = element.dataset.revealId!
     const reveal = project.reveals.find((item) => item.id === revealId)
     if (!reveal) return
-    if (confirm(`Delete ${reveal.title || 'this reveal'}?`)) deleteReveal(revealId)
+    const warning = `Delete ${reveal.title || 'this reveal'}?\n\nThis removes the reveal record itself. Linked scenes and characters will stay in the project, but they will no longer reference this reveal.`
+    if (confirm(warning)) deleteReveal(revealId)
   })
 
   const importInput = document.getElementById('project-import-file') as HTMLInputElement | null
