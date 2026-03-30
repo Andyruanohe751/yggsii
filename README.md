@@ -19,6 +19,10 @@ Manage projects, chapters, scenes, characters, locations, and reveal records in 
 
 Yggsii has a first-class reveal ledger. Track what your characters know, what the audience thinks they know, and when the truth actually lands. Reveals link to scenes and characters and surface throughout search, timeline, and manuscript views.
 
+## Relationship modelling
+
+Track character-to-character relationships with custom labels (ally, rival, family, mentor, anything you want), status tracking (active, changed, ended), optional notes, and scene-level start/end anchors. Relationships appear in the workspace inspector, character editor badges, meeting pair annotations, and workspace search results.
+
 ## Local-first
 
 No accounts. No cloud. No subscriptions. Everything lives in your browser via localStorage. Export your project as a versioned JSON backup at any time and re-import it later.
