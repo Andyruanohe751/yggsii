@@ -1,56 +1,34 @@
 # Yggsii
 
-Yggsii is a local-first narrative planning app for writing stories as structured systems rather than one endless document.
+A local-first narrative debugging workspace for stories with messy structure.
 
-This MVP focuses on inspectability. You can manage projects, chapters, scenes, characters, and locations, then switch into views that expose chronology and shared character presence.
+Yggsii does not try to be your next drafting app. It exists for a different problem: when your story gets large enough that continuity, chronology, and character overlap start breaking faster than you can track them in plain text.
 
-## Chosen stack
+Inspect your story like a system, not a wall of text.
 
-I chose Vite with TypeScript and a small framework-free SPA.
+## What it does
 
-Why:
+Manage projects, chapters, scenes, characters, locations, and reveal records in a structured workspace. Then switch into inspection views that expose what your outline cannot:
 
-- very fast to scaffold and run locally
-- robust enough for a practical MVP
-- no backend needed for local-first storage
-- plain TypeScript keeps the data model easy to reason about and easy to evolve into React, Svelte, or a backend later if desired
+- Timeline view with scene order, cast, location, status, and linked reveals. Filter by text, character, location, or status.
+- Meetings view showing character co-presence across scenes, with active-scene highlighting and ensemble summaries.
+- Manuscript view that compiles chapters and scenes into a read-only assembled draft.
+- Workspace-wide search across scenes, characters, locations, and reveal records with ranked results and direct jump navigation.
 
-## What is built
+## Reveal ledger
 
-- multi-project local story workspace
-- data model for project, chapter, scene, character, and location
-- create and switch between projects
-- CRUD-style editing for story metadata, scenes, characters, and locations
-- chapter and scene navigation column
-- workspace search across scenes, characters, locations, and reveal records, grouped by entity type, with simple result ranking, linked-entity context in results, a small match summary, a one-click clear control, and direct jump back into scene, character, location, or reveal context
-- location inspector showing linked scenes, editable location details, and direct jump into linked scene editing
-- structured scene editor with summary, draft text, timeline label, chapter assignment, status, location, character presence, and direct jumps to manuscript, timeline, and meetings views
-- character inspector showing scene appearances with direct jump into scene editing
-- timeline view showing scene order, chapter, location, cast, and status
-- timeline search and filtering by text, character, location, linked reveal text, and status, with filter state preserved while navigating, a small note explaining reveal-aware search, reveal-link hints on cards, and active-scene highlighting after view jumps
-- character meetings view showing who shares scenes and how often, with active-pair highlighting for clean two-character arrivals, cast-pair highlighting plus titled, time-aware, and location-aware cast-context notes for larger scenes, an active ensemble summary panel for scenes with three or more characters, a stronger ranking bias toward active ensemble pairs, a small ranking explanation note that degrades cleanly when no active-scene context exists, and a return path to the current scene editor
-- product design notes exploring how continuity-audit workflows could feed back into future first-class Yggsii features, including lightweight reveal-ledger support and evaluation of when not to overbuild it
-- first-pass reveal-ledger support in the workspace, with project-level reveal records, scene and character linking, local persistence, import/export round-tripping, reveal-aware workspace search, scene-list linkage hints, and lightweight inspector badges for linked reveal records
-- read-only manuscript assembly view that compiles chapters, scenes, summaries, and draft text, with reveal-link hints and direct jump back into scene editing
-- dark mode and light mode toggle
-- local persistence with `localStorage`
-- project export as versioned JSON backup
-- project import from exported JSON with basic validation
-- dependency-aware deletion flows with clearer confirmation language for scenes, characters, locations, and reveals, plus safer demo-reset copy and plainer unlink-versus-delete consequences
-- import from exported JSON with basic validation and a small success summary after load
-- seeded demo project so the app feels useful on first launch
-- restore-demo button for resetting the dataset quickly
+Yggsii has a first-class reveal ledger. Track what your characters know, what the audience thinks they know, and when the truth actually lands. Reveals link to scenes and characters and surface throughout search, timeline, and manuscript views.
 
-## Strong defaults chosen for MVP
+## Local-first
 
-A few ambiguous product decisions were fixed deliberately so the build could stay coherent:
+No accounts. No cloud. No subscriptions. Everything lives in your browser via localStorage. Export your project as a versioned JSON backup at any time and re-import it later.
 
-- scenes are the main writing unit
-- chapters are containers and ordering groups
-- timeline is represented by a manual scene order integer plus a freeform time label
-- persistence is browser `localStorage`, so the MVP is single-browser and local-machine by default
-- locations are lightweight records rather than a full map system
-- the meetings view is a practical character co-presence surface instead of a full graph library
+## Built with
+
+- TypeScript
+- Vite
+- Zero framework dependencies
+- localStorage for persistence
 
 ## Run locally
 
@@ -59,7 +37,7 @@ npm install
 npm run dev
 ```
 
-Then open the local Vite URL shown in the terminal.
+Open the local URL Vite prints. The app loads with a seeded demo project so you can explore immediately.
 
 ## Build for production
 
@@ -67,15 +45,19 @@ Then open the local Vite URL shown in the terminal.
 npm run build
 ```
 
-## Known limitations
+The output lives in `dist/`.
 
-- no backend or cross-device sync
-- import validation is intentionally basic and expects Yggsii-shaped JSON
-- manuscript assembly is read-only for now
-- timeline ordering is manual rather than calendar-aware
-- there is no rich text editor, just structured plain text fields
-- validation is intentionally light for speed
+## Who this is for
 
-## Project path
+- Novelists with ensemble-heavy or timeline-heavy drafts
+- Tabletop GMs adapting campaigns into coherent narrative
+- Game and narrative designers managing scene, cast, and chronology logic
+- Anyone whose real problem is structural clarity, not blank-page drafting
 
-`C:\Users\Mahon\.openclaw\workspace\projects\yggsii`
+## What it is not
+
+Yggsii is not a rich text editor, a worldbuilding encyclopedia, a collaboration platform, or an AI writing tool. It is a focused inspection surface for story structure.
+
+## License
+
+Private project. Not yet publicly licensed.
