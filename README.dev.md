@@ -58,10 +58,6 @@ The output lives in `dist/`.
 
 Yggsii is not a rich text editor, a worldbuilding encyclopedia, a collaboration platform, or an AI writing tool. It is a focused inspection surface for story structure.
 
-## Live demo
-
-https://monty-builds.github.io/yggsii/
-
 ## License
 
-MIT
+Private project. Not yet publicly licensed.
