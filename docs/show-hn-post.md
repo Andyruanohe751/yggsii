@@ -1,45 +1,46 @@
-# Reddit/HN Post Draft: Show HN
+# Hacker News Show HN Post Draft
 
-## Status: Ready to post (awaiting execution)
+## Status: Ready to post (awaiting HN credentials or Jack to post)
 
-## Target: Hacker News Show HN
+## Target: Show HN (https://news.ycombinator.com/show)
 
 ---
 
 ### Title
 
-Show HN: Yggsii – Local-first narrative debugging workspace
+Yggsii: Local-first narrative debugging workspace
 
 ---
 
 ### Body
 
-Yggsii is a browser-based tool for inspecting story structure when it gets too complex to track in your head or a plain text outline.
+I built Yggsii because I kept losing track of continuity in stories with large casts and non-linear timelines.
 
-It manages projects as structured scenes, characters, locations, and reveals, then provides inspection views:
+Most writing tools help you type. Yggsii helps you see where your story breaks. It treats a narrative as a debuggable system: scenes, characters, locations, reveals, and relationships are first-class objects you can inspect, filter, and cross-reference.
 
-- Timeline view with scene order, cast, location, status, and linked reveals. Filter by any dimension.
-- Meetings view showing character co-presence across scenes with pair-level summaries.
+Key views:
+- Timeline with scene order, cast, location, status, and linked reveals. Filter by character, location, or status.
+- Meetings view showing character co-presence across scenes with ensemble summaries.
 - Reveal ledger tracking what characters know vs what the audience thinks they know.
 - Relationship modelling with custom labels and scene-level anchors.
-- Manuscript assembly compiling chapters/scenes into a read-only draft.
-- Workspace-wide search across all entities.
+- Manuscript assembly compiling chapters into a read-only draft.
+- Workspace-wide search across everything.
 
-Zero backend. Everything in localStorage. Export as JSON at any time.
+Completely local. No accounts, no cloud, no subscriptions. localStorage only. Export as JSON anytime.
 
-Built with TypeScript, Vite, no framework dependencies. MIT licensed.
+TypeScript, Vite, zero framework dependencies. MIT license.
 
 Live demo: https://monty-builds.github.io/yggsii/
-Source: https://github.com/monty-builds/yggsii
+GitHub: https://github.com/monty-builds/yggsii
 
-Interested in feedback, especially from people managing large narrative projects (novels, TTRPG campaigns, game scripts, screenplays).
+Happy to take feedback. Especially curious what features writers or DMs would want next.
 
 ---
 
-### Posting notes
+### HN posting notes
 
-- Show HN posts benefit from early US morning timing (our evening). Best window: 7-9 AM ET = 9-11 PM AEDT.
-- Do not post the same day as the Reddit posts to avoid cross-posting fatigue. Wait 2-3 days after the first Reddit post.
-- Keep responses concise and technical. Avoid marketing language.
-- Upvotes in the first 2-3 hours are critical. Be ready to engage immediately.
-- Show HN titles must start with "Show HN:" per HN guidelines.
+- Read Show HN rules before posting (news.ycombinator.com/show)
+- Best time for HN: US morning 8-10 AM ET = our 10 PM-midnight AEDT
+- Be available to respond to comments for the first 2-3 hours
+- Don't cross-post to Reddit on the same day
+- HN audience responds well to technical framing, open source, local-first, and honest "here's what it does" pitches
